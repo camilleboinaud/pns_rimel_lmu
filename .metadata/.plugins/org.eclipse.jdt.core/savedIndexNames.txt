@@ -1,0 +1,4 @@
+INDEX VERSION 1.127+/home/lecpie/workspacelmu/.metadata/.plugins/org.eclipse.jdt.core
+373858858.index
+3069775500.index
+1618584596.index

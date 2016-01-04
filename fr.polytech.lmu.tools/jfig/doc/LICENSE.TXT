@@ -1,0 +1,68 @@
+This license ("License") contains rights and restrictions associated with
+use of the accompanying software (jfig). Read the License carefully before
+installing the Software. By installing or using the Software you are agreeing
+to the terms and conditions of this License.
+
+jfig graphics editor - Copyright (C) 1996-2005 by Norman Hendrich.
+All rights reserved.
+
+Contact address:
+
+   Norman Hendrich, 
+   Universität Hamburg            (University of Hamburg)
+   FB Informatik                  (Dept. Computer Science)
+   Vogt-Koelln-Str. 30 
+   D 22527 Hamburg
+   Germany
+
+   email: hendrich@informatik.uni-hamburg.de
+
+
+
+
+The jfig3-itext.jar archive also contains a copy of the iText PDF library,
+licensed under a combination of the Mozilla Public License (MPL) and
+Lesser GNU Public License (LGPL), see http://www.lowagie.com/iText/
+
+iText Library - Copyright (C) 1999-2005 by Bruno Lowagie and Paulo Soares. 
+All Rights Reserved.
+
+
+
+1.
+This software is shareware.  Permission to use, copy, and distribute
+this software - except the Java source code - for NON-COMMERCIAL purposes 
+and without fee is hereby granted for a trial period of 30 days,
+provided that this copyright notice appears in all copies.
+
+2a.
+If you begin to use the software regularly for NON-COMMERCIAL purposes, 
+or if you use the software after the trial period of 30 days has expired,
+you need to register jfig and pay a shareware fee of EUR 25.00 / US$ 30.00 
+per copy of jfig. 
+(This sum is probably less than what you charge for one hour of work).
+For details about why and how to register, select menu->help->registration
+in the jfig editor, or follow the "registration" link on the website.
+
+
+2b.
+Please contact me before using jfig or software based on jfig for
+COMMERCIAL purposes.
+
+3.
+Please note the seperate LICENSE and COPYRIGHT terms for the
+transfig/fig2dev-software also available download from the jfig homepage.
+
+4.
+It is illegal to decompile, disassemble or modify this software. 
+Even if the source code of jfig is supplied with your version of jfig, 
+you may not distribute or make copies of the jfig source code in any way.
+
+5.
+THE AUTHOR AND PUBLISHER MAKE NO REPRESENTATIONS OR WARRANTIES
+ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILIY,
+FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+THE AUTHOR AND PUBLISHER SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED
+BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
+THIS SOFTWARE OR ITS DERIVATIVES.
