@@ -3,106 +3,51 @@
 <plugin>
 
    <extension
-         id="sampleBuilder"
-         name="Sample Project Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            hasNature="true">
-         <run
-               class="fr.polytech.lmu.pluginlmu.builder.SampleBuilder">
-         </run>
-      </builder>
-   </extension>
-   <extension
-         id="sampleNature"
-         name="Sample Project Nature"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run
-               class="fr.polytech.lmu.pluginlmu.builder.SampleNature">
-         </run>
-      </runtime>
-      <builder
-            id="fr.polytech.lmu.PluginLMU.sampleBuilder">
-      </builder>
-   </extension>
-   <extension
          point="org.eclipse.ui.commands">
-      <category
-            name="Sample Project Nature commands"
-            id="fr.polytech.lmu.PluginLMU.sampleNature.category">
-      </category>
       <command
-            name="Add/RemoveSample Project Nature"
-            defaultHandler="fr.polytech.lmu.pluginlmu.builder.AddRemoveSampleNatureHandler"
-            categoryId="fr.polytech.lmu.PluginLMU.sampleNature.category"
-            id="fr.polytech.lmu.PluginLMU.addRemoveSampleNature">
+            defaultHandler="fr.polytech.lmu.ui.handlers.LMUHandler"
+            id="fr.polytech.lmu.ui.commands.LMUCommand"
+            name="LMUCommand">
       </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="fr.polytech.lmu.ui.commands.LMUCommand"
+            class="fr.polytech.lmu.ui.handlers.LMUHandler">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
-         <command
-               commandId="fr.polytech.lmu.PluginLMU.addRemoveSampleNature"
-               label="Disable Sample builder"
-               style="push">
-            <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="selection">
-                  <count
-                        value="1">
-                  </count>
-                  <iterate>
-                     <adapt
-                           type="org.eclipse.core.resources.IProject">
-                        <test
-                              value="fr.polytech.lmu.PluginLMU.sampleNature"
-                              property="org.eclipse.core.resources.projectNature">
-                        </test>
-                     </adapt>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>
-         <command
-               commandId="fr.polytech.lmu.PluginLMU.addRemoveSampleNature"
-               label="Enable Sample builder"
-               style="push">
-            <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="selection">
-                  <count
-                        value="1">
-                  </count>
-                  <iterate>
-                     <adapt
-                           type="org.eclipse.core.resources.IProject">
-                        <not>
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <menu
+               id="lmu-menu"
+               label="LMU Menu">
+            <command
+                  commandId="fr.polytech.lmu.ui.commands.LMUCommand"
+                  label="=&gt; LMUCommand"
+                  style="push"
+                  tooltip="LMU Menu">
+               <visibleWhen
+                     checkEnabled="false">
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate>
+                        <adapt
+                              type="org.eclipse.core.resources.IFile">
                            <test
-                                 value="fr.polytech.lmu.PluginLMU.sampleNature"
-                                 property="org.eclipse.core.resources.projectNature">
+                                 property="org.eclipse.core.resources.extension"
+                                 value="java">
                            </test>
-                        </not>
-                     </adapt>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+         </menu>
       </menuContribution>
-   </extension>
-   <extension
-         id="xmlProblem"
-         name="XML Problem"
-         point="org.eclipse.core.resources.markers">
-      <super
-            type="org.eclipse.core.resources.problemmarker">
-      </super>
-      <persistent
-            value="true">
-      </persistent>
    </extension>
 
 </plugin>
