@@ -29,5 +29,5 @@ public abstract class ModelFactory
 		return factoryMap.get(type);
 	}
 
-	public abstract Model createModel(byte[] data) throws ParseError, ModelException;
+	public abstract Model createModel(Object data) throws ParseError, ModelException;
 }
