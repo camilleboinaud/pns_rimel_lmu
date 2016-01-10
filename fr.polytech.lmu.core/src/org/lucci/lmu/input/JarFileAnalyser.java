@@ -30,7 +30,6 @@ import toools.io.file.RegularFile;
 public class JarFileAnalyser extends ModelFactory
 {
 	private Collection<RegularFile> knownJarFiles = new HashSet<RegularFile>();
-	private Map<Entity, Class<?>> entity_class = new HashMap<Entity, Class<?>>();
 
 	public Collection<RegularFile> getJarFiles()
 	{
@@ -41,9 +40,7 @@ public class JarFileAnalyser extends ModelFactory
 	public Model createModel(Object data) throws ParseError
 	{
 		byte[] dt = (byte[]) data;
-		
-		Model model = new Model();
-		
+				
 		try
 		{
 			// create a jar file on the disk from the binary data
@@ -60,37 +57,19 @@ public class JarFileAnalyser extends ModelFactory
 				classContainers.add(new ClassContainer(thisJarFile, classLoader));
 			}
 
-			// take all the classes in the jar files and convert them to LMU
-			// Entities
-			for (Class<?> thisClass : classContainers.listAllClasses())
-			{
-				// if this is not an anonymous inner class (a.b$1)
-				// we take it into account
-				if (!thisClass.getName().matches(".+\\$[0-9]+"))
-				{
-					Entity entity = new Entity();
-					entity.setName(computeEntityName(thisClass));
-					entity.setNamespace(computeEntityNamespace(thisClass));
-					entity_class.put(entity, thisClass);
-					model.addEntity(entity);
-				}
-			}
-
-			// at this only the name of entities is known
-			// neither members nor relation are known
-			// let's find them
 			ModelFiller modelFiller = new ModelFiller();
-			modelFiller.fillModel(model, entity_class);
-			System.out.println("lol");
-			//fillModel(model);
+
+			Model model = modelFiller.createModel(classContainers.listAllClasses());
+			
 			jarFile.delete();
+			
+			return model;
 		}
 		catch (IOException ex)
 		{
 			throw new IllegalStateException();
 		}
 
-		return model;
 	}
 
 	protected static Class<?> createClassNamed(String fullName)

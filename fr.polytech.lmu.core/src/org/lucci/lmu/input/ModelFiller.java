@@ -26,14 +26,38 @@ import org.lucci.lmu.Visibility;
 public class ModelFiller {
 	private Model model;
 	private Map<Class<?>, Entity> primitiveMap = new HashMap<Class<?>, Entity>();
-
+	private Map<Entity, Class<?>> entity_class = new HashMap<Entity, Class<?>>();
 	
 	public ModelFiller() {
 
 	}
-
 	
-	public void fillModel(Model model, Map<Entity, Class<?>> entity_class) {
+	public Model createModel(List <Class<?>> classes) {
+		model = new Model();
+		
+		initModel(classes);
+		fillModel();
+		
+		return model;
+	}
+	
+	public void initModel(List <Class<?>> classes) {
+		for (Class<?> thisClass : classes)
+		{
+			// if this is not an anonymous inner class (a.b$1)
+			// we take it into account
+			if (!thisClass.getName().matches(".+\\$[0-9]+"))
+			{
+				Entity entity = new Entity();
+				entity.setName(computeEntityName(thisClass));
+				entity.setNamespace(computeEntityNamespace(thisClass));
+				entity_class.put(entity, thisClass);
+				model.addEntity(entity);
+			}
+		}
+	}
+	
+	public void fillModel() {
 		System.out.println("fillModel size : " + entity_class.size());
 
 		primitiveMap.put(void.class, Entities.findEntityByName(model, "void"));
