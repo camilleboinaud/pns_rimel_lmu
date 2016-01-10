@@ -49,9 +49,9 @@ public class LmuParser extends ModelFactory
     private String comment = "";
 
     @Override
-    public Model createModel(Object data) throws ParseError, ModelException
+    public Model createModel(Object... data) throws Exception
     {
-    	byte[] dt = (byte[]) data;
+    	byte[] dt = (byte[]) data[0];
     	return createModel(new String(dt));
     }
 
@@ -728,7 +728,7 @@ public class LmuParser extends ModelFactory
 	}
     }
 
-    public void _load(List<String> line) throws ParseError, ModelException
+    public void _load(List<String> line) throws Exception
     {
 	if (line.size() < 2)
 	{
