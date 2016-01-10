@@ -32,7 +32,7 @@ public class cmd extends LmuScript
 	}
 
 	@Override
-	public int runScript(CommandLine cmdLine)
+	public int runScript(CommandLine cmdLine) throws Exception
 	{
 		// Assertions.ensure(Posix.commandIsAvailable("dot"),
 		// "Graphiz is not installed on this computer (the 'dot' command was not found)! Please check http://www.graphviz.org/");

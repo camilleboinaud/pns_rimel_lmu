@@ -22,6 +22,7 @@ public abstract class ModelFactory
 		factoryMap.put(null, LmuParser.getParser());
 		factoryMap.put("lmu", LmuParser.getParser());
 		factoryMap.put("jar", new JarFileAnalyser());
+		factoryMap.put("java", new JavaFileAnalyser());
 	}
 
 	public static ModelFactory getModelFactory(String type)
@@ -29,5 +30,5 @@ public abstract class ModelFactory
 		return factoryMap.get(type);
 	}
 
-	public abstract Model createModel(Object data) throws ParseError, ModelException;
+	public abstract Model createModel(Object... data) throws Exception;
 }

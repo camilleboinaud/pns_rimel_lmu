@@ -37,9 +37,9 @@ public class JarFileAnalyser extends ModelFactory
 	}
 
 	@Override
-	public Model createModel(Object data) throws ParseError
+	public Model createModel(Object... data) throws ParseError
 	{
-		byte[] dt = (byte[]) data;
+		byte[] dt = (byte[]) data[0];
 				
 		try
 		{
