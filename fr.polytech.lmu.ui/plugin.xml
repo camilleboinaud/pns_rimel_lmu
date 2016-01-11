@@ -5,25 +5,35 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="fr.polytech.lmu.ui.handlers.LMUHandlerPNG"
+            defaultHandler="fr.polytech.lmu.ui.handlers.LMUHandler"
             id="fr.polytech.lmu.ui.commands.LmuPngCommand"
             name="PNG generator">
+         <commandParameter
+               id="fr.polytech.lmu.ui.outputType"
+               name="outputType"
+               optional="false">
+         </commandParameter>
       </command>
       <command
-            defaultHandler="fr.polytech.lmu.ui.handlers.LMUHandlerPDF"
+            defaultHandler="fr.polytech.lmu.ui.handlers.LMUHandler"
             id="fr.polytech.lmu.ui.commands.LmuPdfCommand"
             name="PDF generator">
+         <commandParameter
+               id="fr.polytech.lmu.ui.outputType"
+               name="outputType"
+               optional="false">
+         </commandParameter>
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            commandId="fr.polytech.lmu.ui.commands.LmuPngCommand"
-            class="fr.polytech.lmu.ui.handlers.LMUHandlerPNG">
+            commandId="fr.polytech.lmu.ui.commands.LmuPdfCommand"
+            class="fr.polytech.lmu.ui.handlers.LMUHandler">
       </handler>
       <handler
-            class="fr.polytech.lmu.ui.handlers.LMUHandlerPDF"
-            commandId="fr.polytech.lmu.ui.commands.LmuPdfCommand">
+            class="fr.polytech.lmu.ui.handlers.LMUHandler"
+            commandId="fr.polytech.lmu.ui.commands.LmuPngCommand">
       </handler>
    </extension>
    <extension
@@ -77,6 +87,10 @@
                      </with>
                   </or>
                </visibleWhen>
+               <parameter
+                     name="fr.polytech.lmu.ui.outputType"
+                     value="png">
+               </parameter>
             </command>
             <command
                   commandId="fr.polytech.lmu.ui.commands.LmuPdfCommand"
@@ -121,6 +135,10 @@
                      </with>
                   </or>
                </visibleWhen>
+               <parameter
+                     name="fr.polytech.lmu.ui.outputType"
+                     value="pdf">
+               </parameter>
             </command>
          </menu>
       </menuContribution>

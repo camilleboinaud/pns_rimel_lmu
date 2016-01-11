@@ -1,12 +1,26 @@
 package fr.polytech.lmu.ui.handlers;
 
+import java.io.IOException;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.lucci.lmu.Model;
+import org.lucci.lmu.input.ModelFactory;
+import org.lucci.lmu.output.AbstractWriter;
+import org.lucci.lmu.output.WriterException;
+
+import toools.io.FileUtilities;
+import toools.io.file.RegularFile;
+
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
@@ -14,6 +28,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
  * @see org.eclipse.core.commands.AbstractHandler
  */
 public class LMUHandler extends AbstractHandler {
+	
+	protected static final String OUTPUT_FILE_PATH = "lmu/"; 
+	protected static String OUTPUT_FILE_EXTENSION = "";
+	
 	/**
 	 * The constructor.
 	 */
@@ -25,28 +43,74 @@ public class LMUHandler extends AbstractHandler {
 	 * from the application context.
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+
+		OUTPUT_FILE_EXTENSION = event.getParameter("fr.polytech.lmu.ui.outputType");
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-		
-		String outputPath = event.getParameter("fr.polytech.lmu.ui.outputPath");
 		
 		MessageDialog.openInformation(
 				window.getShell(),
 				"lmu-ui",
-				"Your file will be registered at your project root in \"lmu\" directory");
+				"Your file will be registered in your personnal directory (in \"lmu\" sub-directory)");
+		
+		ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.getActivePage().getSelection();
+		try {
+			if (selection instanceof StructuredSelection) {
+				Object selected = ((StructuredSelection) selection).getFirstElement();
+				
+				Object[] paramsInput = null;
+				String inputType = null, fileName = null;
+				
+				if(selected instanceof ICompilationUnit) { //Java or equivalent JVM extension types
+					inputType = FileUtilities.getFileNameExtension(((ICompilationUnit)selected).getElementName());
+					fileName = ((ICompilationUnit)selected).getElementName().split("\\.")[0];
+									
+					paramsInput = new Object[]{ 
+							((ICompilationUnit)selected).getUnderlyingResource().getRawLocation().toString(),	
+							fileName
+					};
+				}
+				
+				Model model = ModelFactory.getModelFactory(inputType).createModel(paramsInput);
+				RegularFile outputFile = 
+						new RegularFile(OUTPUT_FILE_PATH + fileName + "." + OUTPUT_FILE_EXTENSION);
+				AbstractWriter factory = AbstractWriter.getTextFactory(OUTPUT_FILE_EXTENSION);
+				
+				if (factory == null) {
+					System.out.println("Do not know how to generate '" + OUTPUT_FILE_EXTENSION + "' code\n");
+				} else {
+					System.out.println(model.getEntities().size() + " entities and " 
+							+ model.getRelations().size() + " relations\n");
+
+					try {
+						System.out.println("Writing file " + outputFile.getPath() + "\n");
+						byte[] outputBytes = factory.writeModel(model);
+						outputFile.setContent(outputBytes);
+					} catch (WriterException ex) {
+						System.err.println(ex.getMessage() + "'\n");
+					} catch (IOException ex) {
+						System.err.println("I/O error while writing file " + outputFile.getPath() + "\n");
+					}
+				}
+								
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+			
 		return null;
 	}
+	
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return super.isEnabled();
 	}
+	
 
 	@Override
 	public boolean isHandled() {
-		// TODO Auto-generated method stub
 		return super.isHandled();
-	}
-	
+	}	
 	
 }
