@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lucci.lmu.Model;
-import org.lucci.lmu.test.DynamicCompiler;
-
-import toools.io.file.RegularFile;
 
 public class JavaFileAnalyser extends ModelFactory {
 
@@ -15,11 +12,10 @@ public class JavaFileAnalyser extends ModelFactory {
 		String path = (String) data[0];
 		String name = (String) data[1];
 		
-		RegularFile file = new RegularFile(path);
-		String source = new String(file.getContent());
+		ClassFileCompiler compiler = new ClassFileCompiler();
 		
 		List<Class<?>> classes = new ArrayList<>();
-		Class<?> clazz = DynamicCompiler.compile(name, source);
+		Class<?> clazz = compiler.compile(path, name);
 		classes.add(clazz);
 		
 		ModelFiller modelFiller = new ModelFiller();

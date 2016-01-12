@@ -49,7 +49,6 @@ public class DynamicCompiler
 		// manager and our list of "files".
 		// Then we run the compilation with call()
 		compiler.getTask(null, fileManager, null, null, null, jfiles).call();
-
 		// Creating an instance of our compiled class and
 		// running its toString() method
 		try
