@@ -129,7 +129,7 @@
                            variable="activeMenuSelection">
                         <iterate>
                            <instanceof
-                                 value="IPackageFragment">
+                                 value="org.eclipse.jdt.core.IPackageFragment">
                            </instanceof>
                         </iterate>
                      </with>
