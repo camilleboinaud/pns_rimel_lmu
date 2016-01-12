@@ -29,17 +29,13 @@ import toools.collections.Collections;
 import toools.io.file.RegularFile;
 import toools.text.TextUtilities;
 
-public class LmuParser extends ModelFactory
+public class LmuParser implements ModelAnalyser, FileContentBasedAnalyser
 {
-    private final static LmuParser parser = new LmuParser();
-
-    public static LmuParser getParser()
+    private byte[] data;
+    
+    public LmuParser(byte[] data)
     {
-	return parser;
-    }
-
-    private LmuParser()
-    {
+    	this.data = data;
     }
 
     private final Map<RegularFile, Model> modelCache = new HashMap<RegularFile, Model>();
@@ -48,11 +44,9 @@ public class LmuParser extends ModelFactory
     private Entity currentEntity = null;
     private String comment = "";
 
-    @Override
-    public Model createModel(Object... data) throws Exception
+    public Model analyse() throws Exception
     {
-    	byte[] dt = (byte[]) data[0];
-    	return createModel(new String(dt));
+    	return createModel(new String(data));
     }
 
     public Model createModel(String text) throws ParseError, ModelException
@@ -751,9 +745,9 @@ public class LmuParser extends ModelFactory
 		    }
 		    else
 		    {
-			ModelFactory modelFactory = ModelFactory.getModelFactory(fileExtension.toLowerCase());
-
-			if (modelFactory == null)
+		    FileContentBasedAnalyser analyser = FileContentBasedAnalyserFactory.getInstance().getAnalyser(fileExtension.toLowerCase());
+			
+			if (analyser == null)
 			{
 			    syntax(file.getPath() + ": dunno what to do with files extension " + fileExtension);
 			}
@@ -765,7 +759,7 @@ public class LmuParser extends ModelFactory
 			    {
 				try
 				{
-				    newModel = modelFactory.createModel(file.getContent());
+				    newModel = analyser.analyse(file.getContent());
 				    model.merge(newModel);
 				    modelCache.put(file, newModel);
 				}
@@ -833,5 +827,12 @@ public class LmuParser extends ModelFactory
 	    }
 	}
     }
+
+
+	@Override
+	public Model analyse(byte[] data) throws Exception {
+		this.data = data;
+		return analyse();
+	}
 
 }

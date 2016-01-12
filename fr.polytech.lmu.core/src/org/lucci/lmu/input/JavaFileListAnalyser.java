@@ -5,21 +5,24 @@ import java.util.List;
 
 import org.lucci.lmu.Model;
 
-public class JavaFileListAnalyser extends ModelFactory {
+public class JavaFileListAnalyser implements ModelAnalyser {
+	
+	private ClassLoader classLoader;
+	private List<String> classNames;
+	
+	public JavaFileListAnalyser(ClassLoader classLoader, List<String> classNames) {
+		this.classLoader = classLoader;
+		this.classNames = classNames;
+	}
+	
 	@Override
-	/**
-	 * @param data[0] : ClassLoader : the class loader
-	 * @param data[1] : List <String> : the class names
-	 */
-	public Model createModel(Object... data) throws Exception {
-		ClassLoader classloader = (ClassLoader) data[0];
-		List <String> classNames = (List) data[1];
+	public Model analyse() throws Exception {
 		
 		// Load classes from the ClassLoader
 		List <Class<?>> classes = new ArrayList<Class<?>>();
 		
 		for (String className : classNames) {
-			classes.add(classloader.loadClass(className));
+			classes.add(classLoader.loadClass(className));
 		}
 				
 		ModelFiller modelFiller = new ModelFiller();

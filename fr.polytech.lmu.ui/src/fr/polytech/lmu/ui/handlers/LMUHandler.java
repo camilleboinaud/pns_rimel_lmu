@@ -9,6 +9,8 @@ import java.util.List;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageDeclaration;
@@ -19,7 +21,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.lucci.lmu.Model;
-import org.lucci.lmu.input.ModelFactory;
+import org.lucci.lmu.input.JavaFileListAnalyser;
+import org.lucci.lmu.input.ModelAnalyser;
 import org.lucci.lmu.output.AbstractWriter;
 import org.lucci.lmu.output.WriterException;
 
@@ -68,7 +71,9 @@ public class LMUHandler extends AbstractHandler {
 				
 				Object[] paramsInput = null;
 				String inputType = null;
-				List<String> fileNames = new ArrayList<String>();
+				List<String> classNames = new ArrayList<String>();
+				
+				ModelAnalyser analyser = null;
 				
 				if(selected instanceof ICompilationUnit) { //Java or equivalent JVM extension types
 					
@@ -80,13 +85,19 @@ public class LMUHandler extends AbstractHandler {
 						packageDeclared += d.getElementName() + "."; 					
 					}
 					
-					fileNames.add(packageDeclared + ((ICompilationUnit) selected).getElementName().split("\\.")[0]);
-										
-					paramsInput = new Object[]{ 
-							new URLClassLoader(new URL[]{ new URL("file:" + ((ICompilationUnit) selected)
-									.getJavaProject().getOutputLocation().makeAbsolute().toString())}),
-							fileNames
-					};
+					classNames.add(packageDeclared + ((ICompilationUnit) selected).getElementName().split("\\.")[0]);
+					
+					ICompilationUnit compilationUnit = ((ICompilationUnit) selected);
+					IJavaProject project = compilationUnit.getJavaProject(); 
+					IPath outputLocation = project.getOutputLocation();
+					String outputFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(outputLocation.makeRelative()).getLocation().toString();
+					
+					System.out.println(outputFolder);
+					
+					// classloaders assumes path without ending slash is a jar file
+					ClassLoader classLoader = new URLClassLoader(new URL[]{ new URL("file:" + outputFolder + "/") });
+					
+					analyser = new JavaFileListAnalyser(classLoader, classNames);
 					
 				} else if (selected instanceof IPackageFragmentRoot) {
 					//TODO
@@ -96,7 +107,11 @@ public class LMUHandler extends AbstractHandler {
 					//TODO
 				}
 				
-				Model model = ModelFactory.getModelFactory(inputType).createModel(paramsInput);
+				if (analyser == null) {
+					throw new UnsupportedOperationException(selected.toString());
+				}
+				
+				Model model = analyser.analyse();
 				RegularFile outputFile = 
 						new RegularFile(OUTPUT_FILE_PATH + "output." + OUTPUT_FILE_EXTENSION);
 				AbstractWriter factory = AbstractWriter.getTextFactory(OUTPUT_FILE_EXTENSION);
