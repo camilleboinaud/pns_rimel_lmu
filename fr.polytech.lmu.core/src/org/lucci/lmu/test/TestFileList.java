@@ -8,7 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.lucci.lmu.Model;
-import org.lucci.lmu.input.ModelFactory;
+import org.lucci.lmu.input.JavaFileListAnalyser;
+import org.lucci.lmu.input.ModelAnalyser;
 import org.lucci.lmu.input.ModelFiller;
 import org.lucci.lmu.output.AbstractWriter;
 import org.lucci.lmu.output.WriterException;
@@ -19,12 +20,14 @@ import toools.io.file.RegularFile;
 public class TestFileList {
 	public static void main(String[] args) throws Exception {		
 		String binDir = "test-resources/";
-		String[] classNames = {"test.Vehicle", "test.Car", "test.Plane"};
-		String[] fileNames  = {"Vehicle.java", "Car.java", "Plane.java"};
+		String classNamesArray[] = {"test.Car"/*,"test.Vehicle","test.Plane"*/};
+		List<String> classNames = new ArrayList(Arrays.asList(classNamesArray));
 		
 		ClassLoader classLoader = new URLClassLoader(new URL[]{new URL("file:/home/lecpie/workspacelmu/fr.polytech.lmu.core/test-resources/")});
 		
-		Model model = ModelFactory.getModelFactory("javalist").createModel(classLoader, new ArrayList(Arrays.asList(classNames)));
+		ModelAnalyser analyser = new JavaFileListAnalyser(classLoader, classNames);
+		
+		Model model = analyser.analyse();
 		
 		RegularFile outputFile = new RegularFile("test-gen/test.pdf");
 		String outputType = FileUtilities.getFileNameExtension(outputFile.getName());

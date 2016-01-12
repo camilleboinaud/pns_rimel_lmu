@@ -27,7 +27,7 @@ import toools.io.file.RegularFile;
 /**
  * @author luc.hogie
  */
-public class JarFileAnalyser extends ModelFactory
+public class JarFileAnalyser implements ModelAnalyser, FileContentBasedAnalyser
 {
 	private Collection<RegularFile> knownJarFiles = new HashSet<RegularFile>();
 
@@ -35,17 +35,20 @@ public class JarFileAnalyser extends ModelFactory
 	{
 		return this.knownJarFiles;
 	}
+	
+	private byte[] data;
+	
+	public JarFileAnalyser(byte[] data) {
+		this.data = data;
+	}
 
-	@Override
-	public Model createModel(Object... data) throws ParseError
-	{
-		byte[] dt = (byte[]) data[0];
-				
+	public Model analyse() throws Exception
+	{				
 		try
 		{
 			// create a jar file on the disk from the binary data
 			RegularFile jarFile = RegularFile.createTempFile("lmu-", ".jar");
-			jarFile.setContent(dt);
+			jarFile.setContent(data);
 
 			ClassLoader classLoader = new URLClassLoader(new URL[] { jarFile.toURL() });
 
@@ -104,9 +107,19 @@ public class JarFileAnalyser extends ModelFactory
 		return c.getPackage() == null ? Entity.DEFAULT_NAMESPACE : c.getPackage().getName();
 	}
 
-	public Model createModel(File file) throws ParseError, IOException
+	public Model createModel(File file) throws Exception
 	{
-		byte[] data = FileUtilities.getFileContent(file);
-		return createModel(data);
+		data = FileUtilities.getFileContent(file);
+		return analyse();
+	}
+	
+	public JarFileAnalyser() {
+		
+	}
+
+	@Override
+	public Model analyse(byte[] data) throws Exception {
+		this.data = data;
+		return analyse();
 	}
 }

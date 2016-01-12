@@ -16,8 +16,9 @@ import toools.io.file.RegularFile;
 
 public class TestScript {
 
-	public static void main(String args[]) throws ParseError, IOException {
+	public static void main(String args[]) throws Exception {
 		System.out.println(new File(".").getAbsolutePath());
+		//Model model = new JarFileAnalyser().createModel(new File("test-resources/test.jar"));
 		Model model = new JarFileAnalyser().createModel(new File("test-resources/test.jar"));
 
 		RegularFile outputFile = new RegularFile("test-gen/test.pdf");
