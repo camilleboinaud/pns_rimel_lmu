@@ -1,11 +1,19 @@
 package fr.polytech.lmu.ui.handlers;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageDeclaration;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -59,21 +67,38 @@ public class LMUHandler extends AbstractHandler {
 				Object selected = ((StructuredSelection) selection).getFirstElement();
 				
 				Object[] paramsInput = null;
-				String inputType = null, fileName = null;
+				String inputType = null;
+				List<String> fileNames = new ArrayList<String>();
 				
 				if(selected instanceof ICompilationUnit) { //Java or equivalent JVM extension types
+					
 					inputType = FileUtilities.getFileNameExtension(((ICompilationUnit)selected).getElementName());
-					fileName = ((ICompilationUnit)selected).getElementName().split("\\.")[0];
-									
+					IPackageDeclaration[] decl = ((ICompilationUnit) selected).getPackageDeclarations();
+					
+					String packageDeclared = "";
+					for(IPackageDeclaration d: decl){ 
+						packageDeclared += d.getElementName() + "."; 					
+					}
+					
+					fileNames.add(packageDeclared + ((ICompilationUnit) selected).getElementName().split("\\.")[0]);
+										
 					paramsInput = new Object[]{ 
-							((ICompilationUnit)selected).getUnderlyingResource().getRawLocation().toString(),	
-							fileName
+							new URLClassLoader(new URL[]{ new URL("file:" + ((ICompilationUnit) selected)
+									.getJavaProject().getOutputLocation().makeAbsolute().toString())}),
+							fileNames
 					};
+					
+				} else if (selected instanceof IPackageFragmentRoot) {
+					//TODO
+				} else if (selected instanceof IPackageFragment) {
+					//TODO
+				} else if (selected instanceof IJavaProject) {
+					//TODO
 				}
 				
 				Model model = ModelFactory.getModelFactory(inputType).createModel(paramsInput);
 				RegularFile outputFile = 
-						new RegularFile(OUTPUT_FILE_PATH + fileName + "." + OUTPUT_FILE_EXTENSION);
+						new RegularFile(OUTPUT_FILE_PATH + "output." + OUTPUT_FILE_EXTENSION);
 				AbstractWriter factory = AbstractWriter.getTextFactory(OUTPUT_FILE_EXTENSION);
 				
 				if (factory == null) {
