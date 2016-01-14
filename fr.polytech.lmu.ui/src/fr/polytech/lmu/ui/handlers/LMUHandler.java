@@ -16,7 +16,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -77,7 +76,7 @@ public class LMUHandler extends AbstractHandler {
 				
 				if(selected instanceof ICompilationUnit) { //Java or equivalent JVM extension types
 					
-					inputType = FileUtilities.getFileNameExtension(((ICompilationUnit)selected).getElementName());
+					inputType = "javalist";
 					IPackageDeclaration[] decl = ((ICompilationUnit) selected).getPackageDeclarations();
 					
 					String packageDeclared = "";
