@@ -2,7 +2,6 @@ package fr.polytech.lmu.page;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import fr.polytech.lmu.page.preferences.*;
 
 /**
  * The activator class controls the plug-in life cycle

@@ -6,26 +6,20 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.*;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageDeclaration;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.*;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.lucci.lmu.Model;
+import org.lucci.lmu.*;
 import org.lucci.lmu.input.JavaFileListAnalyser;
 import org.lucci.lmu.input.ModelAnalyser;
 import org.lucci.lmu.output.AbstractWriter;
 import org.lucci.lmu.output.WriterException;
 
-import toools.io.FileUtilities;
+import fr.polytech.lmu.ui.Activator;
 import toools.io.file.RegularFile;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -39,8 +33,9 @@ import org.eclipse.jface.viewers.StructuredSelection;
  */
 public class LMUHandler extends AbstractHandler {
 	
-	protected static final String OUTPUT_FILE_PATH = "lmu/"; 
-	protected static String OUTPUT_FILE_EXTENSION = "";
+	protected static String OUTPUT_DIRECTORY; 
+	protected static String OUTPUT_EXTENSION;
+	protected static String OUTPUT_NAME;
 	
 	/**
 	 * The constructor.
@@ -54,13 +49,16 @@ public class LMUHandler extends AbstractHandler {
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		OUTPUT_FILE_EXTENSION = event.getParameter("fr.polytech.lmu.ui.outputType");
+		OUTPUT_EXTENSION = Activator.getDefault().getPreferenceStore().getString("outputExtension");
+		OUTPUT_DIRECTORY = Activator.getDefault().getPreferenceStore().getString("outputDirectory");
+		OUTPUT_NAME = Activator.getDefault().getPreferenceStore().getString("outputName");
+		
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 		
 		MessageDialog.openInformation(
 				window.getShell(),
 				"lmu-ui",
-				"Your file will be registered in your personnal directory (in \"lmu\" sub-directory)");
+				"Your file (" + OUTPUT_NAME + "." + OUTPUT_EXTENSION + ") will be registered in the following directory : " + OUTPUT_DIRECTORY);
 		
 		ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				.getActivePage().getSelection();
@@ -112,11 +110,11 @@ public class LMUHandler extends AbstractHandler {
 				
 				Model model = analyser.analyse();
 				RegularFile outputFile = 
-						new RegularFile(OUTPUT_FILE_PATH + "output." + OUTPUT_FILE_EXTENSION);
-				AbstractWriter factory = AbstractWriter.getTextFactory(OUTPUT_FILE_EXTENSION);
+						new RegularFile(OUTPUT_DIRECTORY + "/" + OUTPUT_NAME + "." + OUTPUT_EXTENSION);
+				AbstractWriter factory = AbstractWriter.getTextFactory(OUTPUT_EXTENSION);
 				
 				if (factory == null) {
-					System.out.println("Do not know how to generate '" + OUTPUT_FILE_EXTENSION + "' code\n");
+					System.out.println("Do not know how to generate '" + OUTPUT_EXTENSION + "' code\n");
 				} else {
 					System.out.println(model.getEntities().size() + " entities and " 
 							+ model.getRelations().size() + " relations\n");
