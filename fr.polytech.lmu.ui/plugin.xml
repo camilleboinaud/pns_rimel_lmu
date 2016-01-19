@@ -6,34 +6,15 @@
          point="org.eclipse.ui.commands">
       <command
             defaultHandler="fr.polytech.lmu.ui.handlers.LMUHandler"
-            id="fr.polytech.lmu.ui.commands.LmuPngCommand"
-            name="PNG generator">
-         <commandParameter
-               id="fr.polytech.lmu.ui.outputType"
-               name="outputType"
-               optional="false">
-         </commandParameter>
-      </command>
-      <command
-            defaultHandler="fr.polytech.lmu.ui.handlers.LMUHandler"
-            id="fr.polytech.lmu.ui.commands.LmuPdfCommand"
-            name="PDF generator">
-         <commandParameter
-               id="fr.polytech.lmu.ui.outputType"
-               name="outputType"
-               optional="false">
-         </commandParameter>
+            id="fr.polytech.lmu.ui.commands.LMUCommand"
+            name="LMU Command">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            commandId="fr.polytech.lmu.ui.commands.LmuPdfCommand"
-            class="fr.polytech.lmu.ui.handlers.LMUHandler">
-      </handler>
-      <handler
             class="fr.polytech.lmu.ui.handlers.LMUHandler"
-            commandId="fr.polytech.lmu.ui.commands.LmuPngCommand">
+            commandId="fr.polytech.lmu.ui.commands.LMUCommand">
       </handler>
    </extension>
    <extension
@@ -41,107 +22,63 @@
       <menuContribution
             allPopups="false"
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
-         <menu
-               id="lmu-menu"
-               label="LMU">
-            <command
-                  commandId="fr.polytech.lmu.ui.commands.LmuPngCommand"
-                  id="lmu-png"
-                  label="PNG generator"
-                  style="push"
-                  tooltip="PNG">
-               <visibleWhen
-                     checkEnabled="false">
-                  <or>
-                     <with
-                           variable="activeMenuSelection">
-                        <iterate>
-                           <instanceof
-                                 value="org.eclipse.jdt.core.ICompilationUnit">
-                           </instanceof>
-                        </iterate>
-                     </with>
-                     <with
-                           variable="activeMenuSelection">
-                        <iterate>
-                           <instanceof
-                                 value="org.eclipse.jdt.core.IJavaProject">
-                           </instanceof>
-                        </iterate>
-                     </with>
-                     <with
-                           variable="activeMenuSelection">
-                        <iterate>
-                           <instanceof
-                                 value="org.eclipse.jdt.core.IPackageFragmentRoot">
-                           </instanceof>
-                        </iterate>
-                     </with>
-                     <with
-                           variable="activeMenuSelection">
-                        <iterate>
-                           <instanceof
-                                 value="IPackageFragment">
-                           </instanceof>
-                        </iterate>
-                     </with>
-                  </or>
-               </visibleWhen>
-               <parameter
-                     name="fr.polytech.lmu.ui.outputType"
-                     value="png">
-               </parameter>
-            </command>
-            <command
-                  commandId="fr.polytech.lmu.ui.commands.LmuPdfCommand"
-                  id="lmu-pdf"
-                  label="PDF generator"
-                  style="push"
-                  tooltip="PDF">
-               <visibleWhen
-                     checkEnabled="false">
-                  <or>
-                     <with
-                           variable="activeMenuSelection">
-                        <iterate>
-                           <instanceof
-                                 value="org.eclipse.jdt.core.ICompilationUnit">
-                           </instanceof>
-                        </iterate>
-                     </with>
-                     <with
-                           variable="activeMenuSelection">
-                        <iterate>
-                           <instanceof
-                                 value="org.eclipse.jdt.core.IJavaProject">
-                           </instanceof>
-                        </iterate>
-                     </with>
-                     <with
-                           variable="activeMenuSelection">
-                        <iterate>
-                           <instanceof
-                                 value="org.eclipse.jdt.core.IPackageFragmentRoot">
-                           </instanceof>
-                        </iterate>
-                     </with>
-                     <with
-                           variable="activeMenuSelection">
-                        <iterate>
-                           <instanceof
-                                 value="org.eclipse.jdt.core.IPackageFragment">
-                           </instanceof>
-                        </iterate>
-                     </with>
-                  </or>
-               </visibleWhen>
-               <parameter
-                     name="fr.polytech.lmu.ui.outputType"
-                     value="pdf">
-               </parameter>
-            </command>
-         </menu>
+         <command
+               commandId="fr.polytech.lmu.ui.commands.LMUCommand"
+               label="LMU"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <or>
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate>
+                        <instanceof
+                              value="org.eclipse.jdt.core.ICompilationUnit">
+                        </instanceof>
+                     </iterate>
+                  </with>
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate>
+                        <instanceof
+                              value="org.eclipse.jdt.core.IJavaProject">
+                        </instanceof>
+                     </iterate>
+                  </with>
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate>
+                        <instanceof
+                              value="org.eclipse.jdt.core.IPackageFragmentRoot">
+                        </instanceof>
+                     </iterate>
+                  </with>
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate>
+                        <instanceof
+                              value="IPackageFragment">
+                        </instanceof>
+                     </iterate>
+                  </with>
+               </or>
+            </visibleWhen>
+         </command>
       </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="fr.polytech.lmu.ui.preference.LMUPreference"
+            id="fr.polytech.lmu.ui.preference.page"
+            name="LMU">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="fr.polytech.lmu.ui.preference.LMUPreference$LMUPreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>
