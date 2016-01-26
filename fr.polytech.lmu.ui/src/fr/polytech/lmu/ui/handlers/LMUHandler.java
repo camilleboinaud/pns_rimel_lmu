@@ -12,6 +12,7 @@ import org.eclipse.core.commands.*;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.*;
+import org.eclipse.jdt.internal.core.PackageFragmentRoot;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -82,45 +83,42 @@ public class LMUHandler extends AbstractHandler {
 					
 					ICompilationUnit compilationUnit = ((ICompilationUnit) selected);
 
-					classNames.add(getFullClassName(compilationUnit));
-										
+					readClassNames(compilationUnit, classNames);
+					
 					ClassLoader classLoader = getClassLoader(compilationUnit.getJavaProject());
 					
 					analyser = new JavaFileListAnalyser(classLoader, classNames);
 					
 				} else if (selected instanceof IPackageFragmentRoot) {
-					//TODO
+					IPackageFragmentRoot packageFragmentRoot = (IPackageFragmentRoot) selected;
+					
+					readClassNames(packageFragmentRoot, classNames);
+					
+					ClassLoader classLoader = getClassLoader(packageFragmentRoot.getJavaProject());
+					
+					analyser = new JavaFileListAnalyser(classLoader, classNames);
 				} else if (selected instanceof IPackageFragment) {
 					System.out.println("packagefragment");
 					
 					IPackageFragment packageFragment = (IPackageFragment) selected;
 					
-					for (ICompilationUnit unit : packageFragment.getCompilationUnits()) {
-						classNames.add(getFullClassName(unit));
-					}
+					readClassNames(packageFragment, classNames);
 					
 					ClassLoader classLoader = getClassLoader(packageFragment.getJavaProject());
 					
 					analyser = new JavaFileListAnalyser(classLoader, classNames);
-					
-
 				
 					//TODO
 				} else if (selected instanceof IJavaProject) {
 					
 					IJavaProject project = (IJavaProject) selected;
 					
-					for (IPackageFragment packageFragment : project.getPackageFragments()) {
-						for (ICompilationUnit unit : packageFragment.getCompilationUnits()) {
-							classNames.add(getFullClassName(unit));
-						}
-					}
+					readClassNames(project, classNames);
 					
 					ClassLoader classLoader = getClassLoader(project);
 					
 					analyser = new JavaFileListAnalyser(classLoader, classNames);
 					
-					//TODO
 				}
 				
 				if (analyser == null) {
@@ -158,6 +156,26 @@ public class LMUHandler extends AbstractHandler {
 	}
 	
 	// Helpers
+	
+	private void readClassNames(ICompilationUnit unit, List <String> classNames) throws JavaModelException {
+		classNames.add(getFullClassName(unit));
+	}
+	
+	private void readClassNames(IPackageFragment packageFragment, List <String> classNames) throws JavaModelException {
+		for (ICompilationUnit unit : packageFragment.getCompilationUnits()) {
+			readClassNames(unit, classNames);
+		}
+	}
+	
+	private void readClassNames(IPackageFragmentRoot root, List <String> classNames) {
+		//TODO
+	}
+	
+	private void readClassNames(IJavaProject project, List <String> classNames) throws JavaModelException {
+		for (IPackageFragment packageFragment : project.getPackageFragments()) {
+			readClassNames(packageFragment, classNames);
+		}
+	}
 	
 	private String getFullClassName(ICompilationUnit unit) throws JavaModelException {
 		IPackageDeclaration[] decl = unit.getPackageDeclarations();
