@@ -75,16 +75,11 @@ public class LMUHandler extends AbstractHandler {
 				if(selected instanceof ICompilationUnit) { //Java or equivalent JVM extension types
 					
 					inputType = "javalist";
-					IPackageDeclaration[] decl = ((ICompilationUnit) selected).getPackageDeclarations();
-					
-					String packageDeclared = "";
-					for(IPackageDeclaration d: decl){ 
-						packageDeclared += d.getElementName() + "."; 					
-					}
-					
-					classNames.add(packageDeclared + ((ICompilationUnit) selected).getElementName().split("\\.")[0]);
 					
 					ICompilationUnit compilationUnit = ((ICompilationUnit) selected);
+
+					classNames.add(getFullClassName(compilationUnit));
+					
 					IJavaProject project = compilationUnit.getJavaProject(); 
 					IPath outputLocation = project.getOutputLocation();
 					String outputFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(outputLocation.makeRelative()).getLocation().toString();
@@ -99,6 +94,9 @@ public class LMUHandler extends AbstractHandler {
 				} else if (selected instanceof IPackageFragmentRoot) {
 					//TODO
 				} else if (selected instanceof IPackageFragment) {
+					IPackageFragment packageFragment = (IPackageFragment) selected;
+					
+				
 					//TODO
 				} else if (selected instanceof IJavaProject) {
 					//TODO
@@ -136,6 +134,17 @@ public class LMUHandler extends AbstractHandler {
 		}
 			
 		return null;
+	}
+	
+	private String getFullClassName(ICompilationUnit unit) throws JavaModelException {
+		IPackageDeclaration[] decl = unit.getPackageDeclarations();
+		
+		String packageDeclared = "";
+		for(IPackageDeclaration d: decl){ 
+			packageDeclared += d.getElementName() + "."; 					
+		}
+		
+		return packageDeclared + unit.getElementName().split("\\.")[0];
 	}
 	
 
