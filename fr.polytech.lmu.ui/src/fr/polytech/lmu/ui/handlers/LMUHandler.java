@@ -107,6 +107,19 @@ public class LMUHandler extends AbstractHandler {
 				
 					//TODO
 				} else if (selected instanceof IJavaProject) {
+					
+					IJavaProject project = (IJavaProject) selected;
+					
+					for (IPackageFragment packageFragment : project.getPackageFragments()) {
+						for (ICompilationUnit unit : packageFragment.getCompilationUnits()) {
+							classNames.add(getFullClassName(unit));
+						}
+					}
+					
+					ClassLoader classLoader = getClassLoader(project);
+					
+					analyser = new JavaFileListAnalyser(classLoader, classNames);
+					
 					//TODO
 				}
 				
