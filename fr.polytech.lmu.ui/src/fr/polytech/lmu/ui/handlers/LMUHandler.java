@@ -1,9 +1,11 @@
 package fr.polytech.lmu.ui.handlers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.commands.*;
@@ -20,6 +22,7 @@ import org.lucci.lmu.output.AbstractWriter;
 import org.lucci.lmu.output.WriterException;
 
 import fr.polytech.lmu.ui.Activator;
+import java4unix.eclipse.Project;
 import toools.io.file.RegularFile;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -73,29 +76,34 @@ public class LMUHandler extends AbstractHandler {
 				ModelAnalyser analyser = null;
 				
 				if(selected instanceof ICompilationUnit) { //Java or equivalent JVM extension types
+					System.out.println("Complationunit");
 					
 					inputType = "javalist";
 					
 					ICompilationUnit compilationUnit = ((ICompilationUnit) selected);
 
 					classNames.add(getFullClassName(compilationUnit));
-					
-					IJavaProject project = compilationUnit.getJavaProject(); 
-					IPath outputLocation = project.getOutputLocation();
-					String outputFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(outputLocation.makeRelative()).getLocation().toString();
-					
-					System.out.println(outputFolder);
-					
-					// classloaders assumes path without ending slash is a jar file
-					ClassLoader classLoader = new URLClassLoader(new URL[]{ new URL("file:" + outputFolder + "/") });
+										
+					ClassLoader classLoader = getClassLoader(compilationUnit.getJavaProject());
 					
 					analyser = new JavaFileListAnalyser(classLoader, classNames);
 					
 				} else if (selected instanceof IPackageFragmentRoot) {
 					//TODO
 				} else if (selected instanceof IPackageFragment) {
+					System.out.println("packagefragment");
+					
 					IPackageFragment packageFragment = (IPackageFragment) selected;
 					
+					for (ICompilationUnit unit : packageFragment.getCompilationUnits()) {
+						classNames.add(getFullClassName(unit));
+					}
+					
+					ClassLoader classLoader = getClassLoader(packageFragment.getJavaProject());
+					
+					analyser = new JavaFileListAnalyser(classLoader, classNames);
+					
+
 				
 					//TODO
 				} else if (selected instanceof IJavaProject) {
@@ -136,6 +144,8 @@ public class LMUHandler extends AbstractHandler {
 		return null;
 	}
 	
+	// Helpers
+	
 	private String getFullClassName(ICompilationUnit unit) throws JavaModelException {
 		IPackageDeclaration[] decl = unit.getPackageDeclarations();
 		
@@ -145,6 +155,26 @@ public class LMUHandler extends AbstractHandler {
 		}
 		
 		return packageDeclared + unit.getElementName().split("\\.")[0];
+	}
+	
+	private ClassLoader getClassLoader(IJavaProject project) throws JavaModelException, MalformedURLException {
+		IPath outputLocation = project.getOutputLocation();
+		String outputFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(outputLocation.makeRelative()).getLocation().toString();
+		
+		List <URL> urlEntries = new ArrayList<>();
+		
+		System.out.println("raw : ");
+		for (IClasspathEntry entry : project.getRawClasspath()) {
+			urlEntries.add(new URL ("file:" + entry.getPath().toString()));
+			//System.out.println(entry.getPath());
+		}
+		
+		urlEntries.add(new URL("file:" + outputFolder + "/"));
+		
+		URL[] urls = new URL[urlEntries.size()];
+		urlEntries.toArray(urls);
+		
+		return new URLClassLoader(urls);
 	}
 	
 
