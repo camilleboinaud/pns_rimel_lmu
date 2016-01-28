@@ -5,14 +5,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.commands.*;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.*;
-import org.eclipse.jdt.internal.core.PackageFragmentRoot;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -23,7 +21,6 @@ import org.lucci.lmu.output.AbstractWriter;
 import org.lucci.lmu.output.WriterException;
 
 import fr.polytech.lmu.ui.Activator;
-import java4unix.eclipse.Project;
 import toools.io.file.RegularFile;
 
 import org.eclipse.jface.dialogs.MessageDialog;
