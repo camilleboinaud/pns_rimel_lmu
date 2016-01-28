@@ -8,8 +8,7 @@ Require-Bundle: com.google.guava,
  org.eclipse.core.runtime,
  javax.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: java4unix.eclipse,
- toools,
+Export-Package: toools,
  toools.collections,
  toools.extern,
  toools.io,
