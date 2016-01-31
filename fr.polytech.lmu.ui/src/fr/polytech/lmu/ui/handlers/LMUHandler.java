@@ -11,6 +11,7 @@ import org.eclipse.core.commands.*;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.*;
+import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -164,8 +165,10 @@ public class LMUHandler extends AbstractHandler {
 		}
 	}
 	
-	private void readClassNames(IPackageFragmentRoot root, List <String> classNames) {
-		//TODO
+	private void readClassNames(IPackageFragmentRoot root, List <String> classNames) throws JavaModelException {
+		for (IJavaElement elem :  root.getChildren() ) {
+			readClassNames((IPackageFragment) elem, classNames);
+		}
 	}
 	
 	private void readClassNames(IJavaProject project, List <String> classNames) throws JavaModelException {
