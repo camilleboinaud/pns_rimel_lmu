@@ -42,6 +42,10 @@ public class LMUPreference extends FieldEditorPreferencePage implements IWorkben
 	
 	public class LMUPreferenceInitializer extends AbstractPreferenceInitializer {
 		
+		public LMUPreferenceInitializer() {
+			// TODO Auto-generated constructor stub
+		}
+		
 		/** 
 		 * Initializes a preference store with default preference values 
 		 * for this plug-in.
