@@ -5,6 +5,7 @@ import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -38,6 +39,7 @@ public class LMUPreference extends FieldEditorPreferencePage implements IWorkben
 		addField(new RadioGroupFieldEditor("outputExtension", "Choose desired output extension", 1, extensions, getFieldEditorParent()));
 		addField(new DirectoryFieldEditor("outputDirectory", "Choose output directory ", getFieldEditorParent()));
 		addField(new StringFieldEditor("outputName", "Enter file output's name ", getFieldEditorParent()));
+		addField(new IntegerFieldEditor("wishedDepth", "Select wished depth for deployment units anaysis ", getFieldEditorParent()));
 	}
 	
 	public class LMUPreferenceInitializer extends AbstractPreferenceInitializer {
@@ -51,7 +53,8 @@ public class LMUPreference extends FieldEditorPreferencePage implements IWorkben
 			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 			store.setDefault("outputExtension", "pdf");			
 			store.setDefault("outputDirectory", "lmu/");			
-			store.setDefault("outputName", "output");			
+			store.setDefault("outputName", "output");	
+			store.setDefault("wishedDepth", "1");
 		}
 		
 	}

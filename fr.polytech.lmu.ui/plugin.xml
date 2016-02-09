@@ -9,6 +9,11 @@
             id="fr.polytech.lmu.ui.commands.LMUCommand"
             name="LMU Command">
       </command>
+      <command
+            defaultHandler="fr.polytech.lmu.ui.handlers.DeploymentUnitsHandler"
+            id="fr.polytech.lmu.ui.unitsCommand"
+            name="DeploymentUnits LMU Command">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -24,7 +29,7 @@
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
          <command
                commandId="fr.polytech.lmu.ui.commands.LMUCommand"
-               label="LMU"
+               label="Standard LMU analysis"
                style="push">
             <visibleWhen
                   checkEnabled="false">
@@ -58,6 +63,24 @@
                      <iterate>
                         <instanceof
                               value="org.eclipse.jdt.core.IPackageFragment">
+                        </instanceof>
+                     </iterate>
+                  </with>
+               </or>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="fr.polytech.lmu.ui.unitsCommand"
+               label="Deployment units LMU analysis"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <or>
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate>
+                        <instanceof
+                              value="org.eclipse.jdt.core.IPackageFragmentRoot">
                         </instanceof>
                      </iterate>
                   </with>
