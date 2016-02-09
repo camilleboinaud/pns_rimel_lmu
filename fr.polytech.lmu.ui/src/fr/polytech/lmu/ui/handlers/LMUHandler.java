@@ -39,11 +39,6 @@ public class LMUHandler extends AbstractHandler {
 	protected static String OUTPUT_EXTENSION;
 	protected static String OUTPUT_NAME;
 	
-	/**
-	 * The constructor.
-	 */
-	public LMUHandler() {
-	}
 
 	/**
 	 * the command has been executed, so extract extract the needed information
