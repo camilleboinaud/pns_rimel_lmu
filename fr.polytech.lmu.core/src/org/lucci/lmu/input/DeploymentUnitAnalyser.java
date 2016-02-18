@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.lucci.lmu.AssociationRelation;
 import org.lucci.lmu.DeploymentUnit;
+import org.lucci.lmu.DeploymentUnitRelation;
 import org.lucci.lmu.DeploymentUnitType;
 import org.lucci.lmu.Entity;
 import org.lucci.lmu.JarDeploymentUnit;
@@ -47,31 +48,25 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 		DeploymentUnit du = new JarDeploymentUnit(filePath);
 		directory = (new File(filePath)).getParent();
 		Model model = new Model();
+			
+		model.addEntity(du);
 		
-		Entity root = new Entity();
-		root.setName(du.getName());
-		
-		model.addEntity(root);
-		
-		analyseRecursiveJarDependencies(root, model, du.retrieveDependencies(), depth);		
+		analyseRecursiveJarDependencies(du, model, du.retrieveDependencies(), depth);		
 		
 		return model;
 	}
 	
 	
-	private void analyseRecursiveJarDependencies(Entity root, Model model, List<String> dependencies, int depth){
+	private void analyseRecursiveJarDependencies(DeploymentUnit root, Model model, List<String> dependencies, int depth){
 			
 		for(String dependency : dependencies){			
 			DeploymentUnit du = new JarDeploymentUnit(directory + "/" + dependency);
-				
-			Entity entity = new Entity();
-			entity.setName(du.getName());
-				
-			model.addEntity(entity);
-			model.addRelation(new AssociationRelation(root, entity));
+								
+			model.addEntity(du);
+			model.addRelation(new DeploymentUnitRelation(root, du));
 			
 			if(depth > 1){
-				analyseRecursiveJarDependencies(entity, model, du.retrieveDependencies() , depth-1);
+				analyseRecursiveJarDependencies(du, model, du.retrieveDependencies() , depth-1);
 			}
 			
 		}

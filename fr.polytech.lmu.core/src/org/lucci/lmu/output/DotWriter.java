@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.lucci.lmu.AssociationRelation;
 import org.lucci.lmu.Attribute;
+import org.lucci.lmu.DeploymentUnitRelation;
 import org.lucci.lmu.Entity;
 import org.lucci.lmu.Group;
 import org.lucci.lmu.InheritanceRelation;
@@ -212,6 +213,15 @@ public class DotWriter extends AbstractWriter
 			buf.append(", label=\"" + assoc.getLabel() + "\"");
 		    }
 
+		    buf.append("];");
+		} else if(relation instanceof DeploymentUnitRelation) {
+			DeploymentUnitRelation dur = (DeploymentUnitRelation) relation;
+		    buf.append("\n\t");
+		    buf.append(quoteNodeNameIfNecessary(String.valueOf(dur.getHeadEntity().getName().hashCode())));
+		    buf.append(" -> ");
+		    buf.append(quoteNodeNameIfNecessary(String.valueOf(dur.getTailEntity().getName().hashCode())));
+		    buf.append(" [arrowhead=vee");
+			buf.append(",style=dashed, color=blue");
 		    buf.append("];");
 		}
 		else
