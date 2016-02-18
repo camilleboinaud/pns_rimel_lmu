@@ -15,11 +15,13 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 	protected String filePath;
 	protected DeploymentUnitType type;
 	protected int depth;
+	protected String directory;
 	
-	public DeploymentUnitAnalyser(String filePath, int depth, DeploymentUnitType type){
+	public DeploymentUnitAnalyser(String directory, String filePath, int depth, DeploymentUnitType type){
 		this.filePath = filePath;
 		this.type = type;
 		this.depth = depth;
+		this.directory = directory;
 	}
 	
 	@Override
@@ -59,7 +61,7 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 	private void analyseRecursiveJarDependencies(Entity root, Model model, List<String> dependencies, int depth){
 			
 		for(String dependency : dependencies){			
-			DeploymentUnit du = new JarDeploymentUnit(dependency);
+			DeploymentUnit du = new JarDeploymentUnit(directory + "/" + dependency);
 				
 			Entity entity = new Entity();
 			entity.setName(du.getName());

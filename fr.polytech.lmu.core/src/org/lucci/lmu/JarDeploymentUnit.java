@@ -13,7 +13,8 @@ public class JarDeploymentUnit extends DeploymentUnit {
 	
 	public JarDeploymentUnit(String filePath){
 		super(filePath);
-		setName(manifest.getMainAttributes().getValue("Bundle-SymbolicName"));
+		System.out.println(filePath);
+		setName(manifest.getMainAttributes().getValue("Name"));
 	}
 	
 	@Override
@@ -27,11 +28,16 @@ public class JarDeploymentUnit extends DeploymentUnit {
 	
 	@Override
 	public List<String> retrieveDependencies(){
-		return new ArrayList<String>(){{
-			java.util.jar.Attributes attributes = manifest.getMainAttributes();
-			addAll(Arrays.asList(attributes.getValue("Bundle-ClassPath").split(",")));
-			addAll(Arrays.asList(attributes.getValue("Require-Bundle").split(",")));
-		}};
+		List<String> res = new ArrayList<String>();
+		java.util.jar.Attributes attributes = manifest.getMainAttributes();
+		
+		String deps = attributes.getValue("Class-Path");
+		System.out.println(deps);
+		if(deps != null){
+			res.addAll(Arrays.asList(deps.split(" ")));
+		}
+		
+		return res;
 	}
 
 

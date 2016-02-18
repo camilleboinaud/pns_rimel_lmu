@@ -21,6 +21,10 @@
             class="fr.polytech.lmu.ui.handlers.LMUHandler"
             commandId="fr.polytech.lmu.ui.commands.LMUCommand">
       </handler>
+      <handler
+            class="fr.polytech.lmu.ui.handlers.DeploymentUnitsHandler"
+            commandId="fr.polytech.lmu.ui.unitsCommand">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
