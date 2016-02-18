@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,7 +36,21 @@ public class ModelFiller {
 	public Model createModel(List <Class<?>> classes) {
 		model = new Model();
 		
+		System.out.println("init list class : " + classes.size());
+		
+		List <Class<?>> classesCleaned = new ArrayList<>();
+		for (Class<?> clazz : classes) {
+			if (!clazz.getName().contains("$") && !classesCleaned.contains(clazz)) {
+				classesCleaned.add(clazz);
+			}
+		}
+		
+		System.out.println("cleaned ? : " + classesCleaned.size());
+		
 		initModel(classes);
+		
+		System.out.println("after : " + model.getEntities().size());
+		
 		fillModel();
 		
 		return model;
@@ -44,6 +59,7 @@ public class ModelFiller {
 	public void initModel(List <Class<?>> classes) {
 		for (Class<?> thisClass : classes)
 		{
+			//System.out.println("adding class");
 			// if this is not an anonymous inner class (a.b$1)
 			// we take it into account
 			if (!thisClass.getName().matches(".+\\$[0-9]+"))
@@ -117,11 +133,18 @@ public class ModelFiller {
 		}
 	}
 
+	private List <String> attrDone = new ArrayList<String>();
+	
 	private void initAttributes(Class<?> clazz, Entity entity, Model model)
 	{
-		System.out.println(clazz);
-		System.out.println(clazz.getClassLoader().getClass());
-
+		if (attrDone.contains(clazz.getName())) return;
+		
+		attrDone.add(clazz.getName());
+		
+		//System.out.println(clazz);
+		//System.out.println("attrs");		
+		try {
+		
 		for (Field field : clazz.getDeclaredFields())
 		{
 			// if the field is not static
@@ -138,7 +161,7 @@ public class ModelFiller {
 						{
 							Class<?> parameterClass = (Class<?>) parameterType;
 							Entity parameterEntity = getEntity(model, parameterClass);
-
+							if (parameterEntity != null) {
 							if (!parameterEntity.isPrimitive())
 							{
 								AssociationRelation rel = new AssociationRelation(parameterEntity, entity);
@@ -154,6 +177,7 @@ public class ModelFiller {
 								rel.setLabel(field.getName());
 								rel.setCardinality("0..n");
 								model.addRelation(rel);
+							}
 							}
 						}
 					}
@@ -192,6 +216,10 @@ public class ModelFiller {
 					}
 				}
 			}
+		}
+		}
+		catch (NoClassDefFoundError e) {
+			System.out.println("Did not find something");
 		}
 	}
 

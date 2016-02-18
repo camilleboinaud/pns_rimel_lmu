@@ -11,16 +11,19 @@ import org.eclipse.core.commands.*;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.*;
+import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.lucci.lmu.*;
+import org.lucci.lmu.input.JarFileAnalyser;
 import org.lucci.lmu.input.JavaFileListAnalyser;
 import org.lucci.lmu.input.ModelAnalyser;
 import org.lucci.lmu.output.AbstractWriter;
 import org.lucci.lmu.output.WriterException;
 
 import fr.polytech.lmu.ui.Activator;
+import toools.io.FileUtilities;
 import toools.io.file.RegularFile;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -82,15 +85,25 @@ public class LMUHandler extends AbstractHandler {
 					analyser = new JavaFileListAnalyser(classLoader, classNames);
 					
 				} else if (selected instanceof IPackageFragmentRoot) {
+					System.out.println("IPackageFragmentRoot");
 					IPackageFragmentRoot packageFragmentRoot = (IPackageFragmentRoot) selected;
 					
-					readClassNames(packageFragmentRoot, classNames);
+					if (packageFragmentRoot.isArchive()) {
+						analyser = new JarFileAnalyser(FileUtilities.getFileContent(packageFragmentRoot.getPath().toFile().getAbsoluteFile()));
+					}
+					else {
+						readClassNames(packageFragmentRoot, classNames);
+						
+						System.out.println(packageFragmentRoot.isOpen());
+						
+						ClassLoader classLoader = getClassLoader(packageFragmentRoot.getJavaProject());
+						
+						analyser = new JavaFileListAnalyser(classLoader, classNames);
+					}
 					
-					ClassLoader classLoader = getClassLoader(packageFragmentRoot.getJavaProject());
 					
-					analyser = new JavaFileListAnalyser(classLoader, classNames);
 				} else if (selected instanceof IPackageFragment) {
-					System.out.println("packagefragment");
+					System.out.println("IPackageFragment");
 					
 					IPackageFragment packageFragment = (IPackageFragment) selected;
 					
@@ -102,7 +115,8 @@ public class LMUHandler extends AbstractHandler {
 				
 					//TODO
 				} else if (selected instanceof IJavaProject) {
-					
+					System.out.println("IJavaProject");
+				
 					IJavaProject project = (IJavaProject) selected;
 					
 					readClassNames(project, classNames);
@@ -150,21 +164,37 @@ public class LMUHandler extends AbstractHandler {
 	// Helpers
 	
 	private void readClassNames(ICompilationUnit unit, List <String> classNames) throws JavaModelException {
+		System.out.println("unit");
+		unit.open(null);
 		classNames.add(getFullClassName(unit));
 	}
 	
 	private void readClassNames(IPackageFragment packageFragment, List <String> classNames) throws JavaModelException {
+		
 		for (ICompilationUnit unit : packageFragment.getCompilationUnits()) {
 			readClassNames(unit, classNames);
 		}
 	}
 	
-	private void readClassNames(IPackageFragmentRoot root, List <String> classNames) {
-		//TODO
+	private void readClassNames(IPackageFragmentRoot root, List <String> classNames) throws JavaModelException {
+		if (root.isArchive()) {
+			
+		}
+		else {
+			
+			for (IJavaElement elem :  root.getChildren() ) {
+				IPackageFragment packageFragment = (IPackageFragment) elem;
+				packageFragment.open(null);
+				readClassNames(packageFragment, classNames);
+			}
+		
+		
+		}
 	}
 	
 	private void readClassNames(IJavaProject project, List <String> classNames) throws JavaModelException {
 		for (IPackageFragment packageFragment : project.getPackageFragments()) {
+			packageFragment.open(null);
 			readClassNames(packageFragment, classNames);
 		}
 	}
@@ -177,7 +207,9 @@ public class LMUHandler extends AbstractHandler {
 			packageDeclared += d.getElementName() + "."; 					
 		}
 		
-		return packageDeclared + unit.getElementName().split("\\.")[0];
+		String fullName = packageDeclared + unit.getElementName().split("\\.")[0];
+		System.out.println(fullName);
+		return fullName;
 	}
 	
 	private ClassLoader getClassLoader(IJavaProject project) throws JavaModelException, MalformedURLException {

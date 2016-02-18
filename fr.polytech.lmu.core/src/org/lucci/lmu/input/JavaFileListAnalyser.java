@@ -20,8 +20,9 @@ public class JavaFileListAnalyser implements ModelAnalyser {
 		
 		// Load classes from the ClassLoader
 		List <Class<?>> classes = new ArrayList<Class<?>>();
-		
+				
 		for (String className : classNames) {
+			
 			classes.add(classLoader.loadClass(className));
 		}
 				
