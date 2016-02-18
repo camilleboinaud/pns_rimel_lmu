@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -13,7 +14,15 @@ public class JarDeploymentUnit extends DeploymentUnit {
 	
 	public JarDeploymentUnit(String filePath){
 		super(filePath);
-		setName(manifest.getMainAttributes().getValue("Bundle-SymbolicName"));
+		
+		String name = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+		
+		if (name == null) {
+			String[] pathTokens = filePath.split("/");
+			name = pathTokens[pathTokens.length - 1];
+		}
+		
+		setName(name);
 	}
 	
 	@Override
@@ -27,11 +36,21 @@ public class JarDeploymentUnit extends DeploymentUnit {
 	
 	@Override
 	public List<String> retrieveDependencies(){
-		return new ArrayList<String>(){{
-			java.util.jar.Attributes attributes = manifest.getMainAttributes();
-			addAll(Arrays.asList(attributes.getValue("Bundle-ClassPath").split(",")));
-			addAll(Arrays.asList(attributes.getValue("Require-Bundle").split(",")));
-		}};
+		List <String> dependancies = new ArrayList<>();
+		
+		Attributes attributes = manifest.getMainAttributes();
+		
+		String bundlesString = attributes.getValue("Bundle-ClassPath");
+		if (bundlesString != null) {
+			dependancies.addAll(Arrays.asList(bundlesString.split(",")));
+		}
+		
+		bundlesString = attributes.getValue("Require-Bundle");
+		if (bundlesString != null) {
+			dependancies.addAll(Arrays.asList(bundlesString.split(",")));
+		}
+
+		return dependancies;
 	}
 
 
