@@ -61,7 +61,7 @@ public class JarFileAnalyser implements ModelAnalyser, FileContentBasedAnalyser
 			}
 
 			ModelFiller modelFiller = new ModelFiller();
-
+			
 			Model model = modelFiller.createModel(classContainers.listAllClasses());
 			
 			jarFile.delete();
