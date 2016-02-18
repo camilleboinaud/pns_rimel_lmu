@@ -15,7 +15,11 @@ public class JarDeploymentUnit extends DeploymentUnit {
 	public JarDeploymentUnit(String filePath){
 		super(filePath);
 		
-		String name = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+		String name = manifest.getMainAttributes().getValue("Name");
+		
+		if (name == null) {
+			name = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+		}
 		
 		if (name == null) {
 			String[] pathTokens = filePath.split("/");
@@ -48,6 +52,11 @@ public class JarDeploymentUnit extends DeploymentUnit {
 		bundlesString = attributes.getValue("Require-Bundle");
 		if (bundlesString != null) {
 			dependancies.addAll(Arrays.asList(bundlesString.split(",")));
+		}
+		
+		bundlesString = attributes.getValue("Class-Path");
+		if(bundlesString != null){
+			dependancies.addAll(Arrays.asList(bundlesString.split(" ")));
 		}
 
 		return dependancies;

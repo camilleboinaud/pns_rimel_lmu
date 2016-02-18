@@ -13,7 +13,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import fr.polytech.lmu.ui.Activator;
 
 public class LMUPreference extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
-	
+		
 	public static String[][] extensions = new String[][] { 
 		{"PDF", "pdf"}, 
 		{"PNG", "png"}, 
@@ -44,8 +44,8 @@ public class LMUPreference extends FieldEditorPreferencePage implements IWorkben
 	
 	public class LMUPreferenceInitializer extends AbstractPreferenceInitializer {
 		
-		public LMUPreferenceInitializer() {
-			// TODO Auto-generated constructor stub
+		public LMUPreferenceInitializer(){
+			super();
 		}
 		
 		/** 
