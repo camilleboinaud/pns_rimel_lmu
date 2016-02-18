@@ -61,7 +61,6 @@ public class DeploymentUnitsHandler extends AbstractHandler {
 					
 					IPackageFragmentRoot packageFragmentRoot = (IPackageFragmentRoot) selected;
 					analyser = new DeploymentUnitAnalyser(
-							packageFragmentRoot.getPath().makeAbsolute().removeLastSegments(1).toString(),
 							packageFragmentRoot.getPath().makeAbsolute().toString(), 
 							WISHED_DEPTH, 
 							DeploymentUnitType.JAR

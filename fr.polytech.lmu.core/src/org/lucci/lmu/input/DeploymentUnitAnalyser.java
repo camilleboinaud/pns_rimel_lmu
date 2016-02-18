@@ -1,5 +1,6 @@
 package org.lucci.lmu.input;
 
+import java.io.File;
 import java.util.List;
 
 import org.lucci.lmu.AssociationRelation;
@@ -14,14 +15,13 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 
 	protected String filePath;
 	protected DeploymentUnitType type;
-	protected int depth;
 	protected String directory;
+	protected int depth;
 	
-	public DeploymentUnitAnalyser(String directory, String filePath, int depth, DeploymentUnitType type){
+	public DeploymentUnitAnalyser(String filePath, int depth, DeploymentUnitType type){
 		this.filePath = filePath;
 		this.type = type;
 		this.depth = depth;
-		this.directory = directory;
 	}
 	
 	@Override
@@ -45,6 +45,7 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 	
 	private Model analyseJarUnit(){
 		DeploymentUnit du = new JarDeploymentUnit(filePath);
+		directory = (new File(filePath)).getParent();
 		Model model = new Model();
 		
 		Entity root = new Entity();
@@ -70,7 +71,7 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 			model.addRelation(new AssociationRelation(root, entity));
 			
 			if(depth > 1){
-				analyseRecursiveJarDependencies(entity, model, du.retrieveDependencies() , depth--);
+				analyseRecursiveJarDependencies(entity, model, du.retrieveDependencies() , depth-1);
 			}
 			
 		}
