@@ -88,6 +88,14 @@
                         </instanceof>
                      </iterate>
                   </with>
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate>
+                        <instanceof
+                              value="org.eclipse.jdt.core.IJavaProject">
+                        </instanceof>
+                     </iterate>
+                  </with>
                </or>
             </visibleWhen>
          </command>

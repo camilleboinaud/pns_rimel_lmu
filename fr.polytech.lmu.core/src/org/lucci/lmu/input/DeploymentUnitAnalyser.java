@@ -3,6 +3,10 @@ package org.lucci.lmu.input;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.core.internal.resources.WorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.pde.core.plugin.ModelEntry;
+import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.lucci.lmu.AssociationRelation;
 import org.lucci.lmu.DeploymentUnit;
 import org.lucci.lmu.DeploymentUnitRelation;
@@ -10,6 +14,7 @@ import org.lucci.lmu.DeploymentUnitType;
 import org.lucci.lmu.Entity;
 import org.lucci.lmu.JarDeploymentUnit;
 import org.lucci.lmu.Model;
+import org.lucci.lmu.PluginDeploymentUnit;
 
 public class DeploymentUnitAnalyser implements ModelAnalyser {
 
@@ -40,7 +45,14 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 	
 	
 	private Model analysePluginUnit() {
-		return null;
+		DeploymentUnit du = new PluginDeploymentUnit(filePath);
+		
+		Model model = new Model();
+		model.addEntity(du);
+		
+		analyzeRecursivePluginDependencies(du, model, du.retrieveDependencies(), depth);		
+		
+		return model;
 	}	
 
 	
@@ -58,20 +70,57 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 	
 	
 	private void analyseRecursiveJarDependencies(DeploymentUnit root, Model model, List<String> dependencies, int depth){
+		for(String dependency : dependencies){
+			String location = directory + "/" + dependency;
 			
-		for(String dependency : dependencies){			
-			DeploymentUnit du = new JarDeploymentUnit(directory + "/" + dependency);
-								
-			model.addEntity(du);
-			model.addRelation(new DeploymentUnitRelation(root, du));
+			if (new File(location).isDirectory()) {
+				continue;
+			}
 			
-			if(depth > 1){
-				analyseRecursiveJarDependencies(du, model, du.retrieveDependencies() , depth-1);
+			try {
+				DeploymentUnit du = new JarDeploymentUnit(location);
+					
+				Entity entity = new Entity();
+				entity.setName(du.getName());
+					
+				model.addEntity(entity);
+				model.addRelation(new DeploymentUnitRelation(root, du));
+				
+				if(depth > 1){
+					analyseRecursiveJarDependencies(du, model, du.retrieveDependencies() , depth - 1);
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 			
 		}
-		
-		
 	}
+	
+	private void analyzeRecursivePluginDependencies(DeploymentUnit root, Model model, List<String> dependencies, int depth){
+		for(String dependency : dependencies){
+			
+			ModelEntry dependencyModel = PluginRegistry.findEntry(dependency);
+			
+			if (dependencyModel == null) {
+				System.err.println("did not find entry : " + dependency);
+				continue;
+			}
+			
+			String location = dependencyModel.getModel().getInstallLocation();
+			
+			DeploymentUnit du = new PluginDeploymentUnit(dependencyModel.getModel().getInstallLocation());
 
+			Entity entity = new Entity();
+			entity.setName(du.getName());
+				
+			model.addEntity(entity);
+			model.addRelation(new DeploymentUnitRelation(root, du));
+			
+			if(depth > 1){
+				analyzeRecursivePluginDependencies(du, model, du.retrieveDependencies() , depth - 1);
+			}
+			
+		}
+	}
 }

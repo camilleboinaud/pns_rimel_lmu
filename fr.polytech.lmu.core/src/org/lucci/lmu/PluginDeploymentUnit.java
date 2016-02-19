@@ -1,5 +1,7 @@
 package org.lucci.lmu;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,17 +10,19 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-public class JarDeploymentUnit extends DeploymentUnit {
+import org.eclipse.osgi.storage.ManifestLocalization;
+
+public class PluginDeploymentUnit extends DeploymentUnit {
 	
 	protected Manifest manifest;
 	
-	public JarDeploymentUnit(String filePath){
+	public PluginDeploymentUnit(String filePath){
 		super(filePath);
 		
-		String name = manifest.getMainAttributes().getValue("Name");
+		String name = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
 		
-		if (name == null) {
-			name = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+		if (name.contains(";")) {
+			name = name.split(";")[0];
 		}
 		
 		if (name == null) {
@@ -32,10 +36,19 @@ public class JarDeploymentUnit extends DeploymentUnit {
 	@Override
 	protected void retrieveDescriptionFile() {
 		try {
-			manifest =  new JarFile(filePath).getManifest();
+			System.out.println("lol");
+			
+			if (new File(filePath).isDirectory()) {
+				manifest = new Manifest(new FileInputStream(filePath + "/META-INF/MANIFEST.MF"));
+			}
+			else {
+				manifest =  new JarFile(filePath).getManifest();
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 	}
 	
 	@Override
@@ -51,22 +64,20 @@ public class JarDeploymentUnit extends DeploymentUnit {
 		
 		bundlesString = attributes.getValue("Require-Bundle");
 		if (bundlesString != null) {
+			
 			for (String dep : bundlesString.split(",")) {
 				if (dep.contains(";")) {
 					dep = dep.split(";")[0];
 				}
 				
+				System.out.println("add : " + dep);
+				
 				dependancies.add(dep);
-			}		
-		}
-		
-		bundlesString = attributes.getValue("Class-Path");
-		if(bundlesString != null){
-			dependancies.addAll(Arrays.asList(bundlesString.split(" ")));
+			}
+			
 		}
 
 		return dependancies;
 	}
-
 
 }

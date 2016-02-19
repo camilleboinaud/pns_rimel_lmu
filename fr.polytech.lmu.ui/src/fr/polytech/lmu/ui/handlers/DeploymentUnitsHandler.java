@@ -7,6 +7,8 @@ import java.util.List;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -65,6 +67,14 @@ public class DeploymentUnitsHandler extends AbstractHandler {
 							WISHED_DEPTH, 
 							DeploymentUnitType.JAR
 					);
+				}
+				
+				if (selected instanceof IJavaProject) {
+					System.out.println("Project as plugin");
+					
+					IJavaProject project = (IJavaProject) selected;
+					
+					analyser = new DeploymentUnitAnalyser(ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile().getAbsolutePath() + "/" + ((IJavaProject) selected).getPath().makeRelative().toString(), WISHED_DEPTH, DeploymentUnitType.PLUGIN);
 				}
 	
 				
