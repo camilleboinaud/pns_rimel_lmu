@@ -104,9 +104,7 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 				System.err.println("did not find entry : " + dependency);
 				continue;
 			}
-			
-			String location = dependencyModel.getModel().getInstallLocation();
-			
+						
 			DeploymentUnit du = new PluginDeploymentUnit(dependencyModel.getModel().getInstallLocation());
 
 			addEntity(model, root, du);

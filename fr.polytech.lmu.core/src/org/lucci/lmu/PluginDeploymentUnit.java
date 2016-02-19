@@ -51,9 +51,7 @@ public class PluginDeploymentUnit extends DeploymentUnit {
 		
 		Attributes attributes = manifest.getMainAttributes();
 		
-		String bundlesString;
-		
-		bundlesString = attributes.getValue("Require-Bundle");
+		String bundlesString = attributes.getValue("Require-Bundle");
 		if (bundlesString != null) {
 			
 			for (String dep : bundlesString.split(",")) {
