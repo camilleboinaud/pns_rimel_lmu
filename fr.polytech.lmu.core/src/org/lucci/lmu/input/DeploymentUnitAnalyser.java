@@ -49,9 +49,8 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 		DeploymentUnit du = new PluginDeploymentUnit(filePath);
 		
 		Model model = new Model();
-		model.addEntity(du);
 		
-		analyzeRecursivePluginDependencies(du, model, du.retrieveDependencies(), depth);		
+		analyzeRecursivePluginDependencies(du, model, depth);		
 		
 		return model;
 	}	
@@ -61,17 +60,17 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 		DeploymentUnit du = new JarDeploymentUnit(filePath);
 		directory = (new File(filePath)).getParent();
 		Model model = new Model();
-			
-		model.addEntity(du);
-		
-		analyseRecursiveJarDependencies(du, model, du.retrieveDependencies(), depth);		
+					
+		analyseRecursiveJarDependencies(du, model, depth);		
 		
 		return model;
 	}
 	
 	
-	private void analyseRecursiveJarDependencies(DeploymentUnit root, Model model, List<String> dependencies, int depth){
-		for(String dependency : dependencies){
+	private void analyseRecursiveJarDependencies(DeploymentUnit root, Model model, int depth){
+		model.addEntity(root);
+		
+		for(String dependency : root.retrieveDependencies()){
 			String location = directory + "/" + dependency;
 			
 			if (new File(location).isDirectory()) {
@@ -84,7 +83,7 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 				model.addEntity(du);
 				
 				if(depth > 1){
-					analyseRecursiveJarDependencies(du, model, du.retrieveDependencies() , depth - 1);
+					analyseRecursiveJarDependencies(du, model, depth - 1);
 				}
 			}
 			catch (Exception e) {
@@ -94,8 +93,10 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 		}
 	}
 	
-	private void analyzeRecursivePluginDependencies(DeploymentUnit root, Model model, List<String> dependencies, int depth){
-		for(String dependency : dependencies){
+	private void analyzeRecursivePluginDependencies(DeploymentUnit root, Model model, int depth){
+		model.addEntity(root);
+		
+		for(String dependency : root.retrieveDependencies()) {
 			
 			ModelEntry dependencyModel = PluginRegistry.findEntry(dependency);
 			
@@ -137,7 +138,7 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 			}
 						
 			if(depth > 1){
-				analyzeRecursivePluginDependencies(du, model, du.retrieveDependencies() , depth - 1);
+				analyzeRecursivePluginDependencies(du, model, depth - 1);
 			}
 			
 		}
