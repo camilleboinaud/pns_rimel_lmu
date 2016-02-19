@@ -217,9 +217,9 @@ public class DotWriter extends AbstractWriter
 		} else if(relation instanceof DeploymentUnitRelation) {
 			DeploymentUnitRelation dur = (DeploymentUnitRelation) relation;
 		    buf.append("\n\t");
-		    buf.append(quoteNodeNameIfNecessary(String.valueOf(dur.getHeadEntity().getName().hashCode())));
-		    buf.append(" -> ");
 		    buf.append(quoteNodeNameIfNecessary(String.valueOf(dur.getTailEntity().getName().hashCode())));
+		    buf.append(" -> ");
+		    buf.append(quoteNodeNameIfNecessary(String.valueOf(dur.getHeadEntity().getName().hashCode())));
 		    buf.append(" [arrowhead=vee");
 			buf.append(",style=dashed, color=blue");
 		    buf.append("];");
