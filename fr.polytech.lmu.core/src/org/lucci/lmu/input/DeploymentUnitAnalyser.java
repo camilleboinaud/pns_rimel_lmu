@@ -1,5 +1,6 @@
 package org.lucci.lmu.input;
 
+import java.io.File;
 import java.util.List;
 
 import org.eclipse.core.internal.resources.WorkspaceRoot;
@@ -53,7 +54,7 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 		
 		model.addEntity(root);
 		
-		analyseRecursiveJarDependencies(root, model, du.retrieveDependencies(), depth);		
+		analyzeRecursivePluginDependencies(root, model, du.retrieveDependencies(), depth);		
 		
 		return model;
 	}	
@@ -76,17 +77,28 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 	
 	private void analyseRecursiveJarDependencies(Entity root, Model model, List<String> dependencies, int depth){
 			
-		for(String dependency : dependencies){			
-			DeploymentUnit du = new JarDeploymentUnit(directory + "/" + dependency);
-				
-			Entity entity = new Entity();
-			entity.setName(du.getName());
-				
-			model.addEntity(entity);
-			model.addRelation(new AssociationRelation(root, entity));
+		for(String dependency : dependencies){
+			String location = directory + "/" + dependency;
 			
-			if(depth > 1){
-				analyseRecursiveJarDependencies(entity, model, du.retrieveDependencies() , depth--);
+			if (new File(location).isDirectory()) {
+				continue;
+			}
+			
+			try {
+				DeploymentUnit du = new JarDeploymentUnit(location);
+					
+				Entity entity = new Entity();
+				entity.setName(du.getName());
+					
+				model.addEntity(entity);
+				model.addRelation(new AssociationRelation(root, entity));
+				
+				if(depth > 1){
+					analyseRecursiveJarDependencies(entity, model, du.retrieveDependencies() , depth--);
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 			
 		}
@@ -97,8 +109,15 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 			
 			ModelEntry dependencyModel = PluginRegistry.findEntry(dependency);
 			
+			if (dependencyModel == null) {
+				System.err.println("did not find entry : " + dependency);
+				continue;
+			}
+			
+			String location = dependencyModel.getModel().getInstallLocation();
+			
 			DeploymentUnit du = new PluginDeploymentUnit(dependencyModel.getModel().getInstallLocation());
-				
+
 			Entity entity = new Entity();
 			entity.setName(du.getName());
 				

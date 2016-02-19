@@ -51,7 +51,13 @@ public class JarDeploymentUnit extends DeploymentUnit {
 		
 		bundlesString = attributes.getValue("Require-Bundle");
 		if (bundlesString != null) {
-			dependancies.addAll(Arrays.asList(bundlesString.split(",")));
+			for (String dep : bundlesString.split(",")) {
+				if (dep.contains(";")) {
+					dep = dep.split(";")[0];
+				}
+				
+				dependancies.add(dep);
+			}		
 		}
 		
 		bundlesString = attributes.getValue("Class-Path");

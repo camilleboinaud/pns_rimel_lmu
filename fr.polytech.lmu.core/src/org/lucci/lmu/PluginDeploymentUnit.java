@@ -1,5 +1,6 @@
 package org.lucci.lmu;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.jar.Manifest;
 
 import org.eclipse.osgi.storage.ManifestLocalization;
 
-public class PluginDeploymentUnit extends JarDeploymentUnit {
+public class PluginDeploymentUnit extends DeploymentUnit {
 	
 	protected Manifest manifest;
 	
@@ -19,6 +20,10 @@ public class PluginDeploymentUnit extends JarDeploymentUnit {
 		super(filePath);
 		
 		String name = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+		
+		if (name.contains(";")) {
+			name = name.split(";")[0];
+		}
 		
 		if (name == null) {
 			String[] pathTokens = filePath.split("/");
@@ -33,7 +38,13 @@ public class PluginDeploymentUnit extends JarDeploymentUnit {
 		try {
 			System.out.println("lol");
 			
-			manifest = new Manifest(new FileInputStream(filePath + "/META-INF/MANIFEST.MF"));
+			if (new File(filePath).isDirectory()) {
+				manifest = new Manifest(new FileInputStream(filePath + "/META-INF/MANIFEST.MF"));
+			}
+			else {
+				manifest =  new JarFile(filePath).getManifest();
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -53,7 +64,17 @@ public class PluginDeploymentUnit extends JarDeploymentUnit {
 		
 		bundlesString = attributes.getValue("Require-Bundle");
 		if (bundlesString != null) {
-			dependancies.addAll(Arrays.asList(bundlesString.split(",")));
+			
+			for (String dep : bundlesString.split(",")) {
+				if (dep.contains(";")) {
+					dep = dep.split(";")[0];
+				}
+				
+				System.out.println("add : " + dep);
+				
+				dependancies.add(dep);
+			}
+			
 		}
 
 		return dependancies;

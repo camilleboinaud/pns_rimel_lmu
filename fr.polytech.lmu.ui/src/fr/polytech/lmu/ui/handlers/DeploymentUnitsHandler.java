@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -74,7 +75,7 @@ public class DeploymentUnitsHandler extends AbstractHandler {
 					
 					IJavaProject project = (IJavaProject) selected;
 					
-					analyser = new DeploymentUnitAnalyser(((IJavaProject) selected).getPath().makeAbsolute().toString(), WISHED_DEPTH, DeploymentUnitType.PLUGIN);
+					analyser = new DeploymentUnitAnalyser("", ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile().getAbsolutePath() + "/" + ((IJavaProject) selected).getPath().makeRelative().toString(), WISHED_DEPTH, DeploymentUnitType.PLUGIN);
 				}
 	
 				
