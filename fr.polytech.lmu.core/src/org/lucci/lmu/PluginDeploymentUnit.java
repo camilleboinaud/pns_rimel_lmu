@@ -21,13 +21,13 @@ public class PluginDeploymentUnit extends DeploymentUnit {
 		
 		String name = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
 		
-		if (name.contains(";")) {
-			name = name.split(";")[0];
-		}
-		
 		if (name == null) {
 			String[] pathTokens = filePath.split("/");
 			name = pathTokens[pathTokens.length - 1];
+		}
+		
+		if (name.contains(";")) {
+			name = name.split(";")[0];
 		}
 		
 		setName(name);

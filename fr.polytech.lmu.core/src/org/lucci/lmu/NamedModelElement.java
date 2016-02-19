@@ -37,7 +37,7 @@ public class NamedModelElement extends ModelElement
         if (MathsUtilities.isNumber(name))
             throw new IllegalArgumentException("name cannot be set to a number");
         
-        
+        System.out.println("Setting name : " + name);
         this.name = name;
     }
 

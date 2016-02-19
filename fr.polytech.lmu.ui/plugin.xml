@@ -92,7 +92,7 @@
                         variable="activeMenuSelection">
                      <iterate>
                         <instanceof
-                              value="org.eclipse.jdt.core.IJavaProject">
+                              value="org.eclipse.core.resources.IProject">
                         </instanceof>
                      </iterate>
                   </with>
