@@ -80,7 +80,7 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 			try {
 				DeploymentUnit du = new JarDeploymentUnit(location);
 					
-				model.addEntity(du);
+				addEntity(model, root, du);
 				
 				if(depth > 1){
 					analyseRecursiveJarDependencies(du, model, depth - 1);
@@ -109,38 +109,42 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 			
 			DeploymentUnit du = new PluginDeploymentUnit(dependencyModel.getModel().getInstallLocation());
 
-			boolean found = false;
-			
-			for (Entity addedEntity : model.getEntities()) {
-				if (addedEntity.getName().equals(du.getName())) {
-					found = true;
-					break;
-				}
-			}
-			
-			if (!found) {
-				model.addEntity(du);
-			}
-			
-			found = false;
-			for (Relation relation : model.getRelations()) {
-				Entity source = relation.getHeadEntity();
-				Entity dest   = relation.getTailEntity();
-				
-				if (dest.getName().equals(root.getName()) && source.getName().equals(du.getName()) ) {
-					found = true;
-					break;
-				}
-			}
-			
-			if (!found) {
-				model.addRelation(new DeploymentUnitRelation(root, du));
-			}
+			addEntity(model, root, du);
 						
 			if(depth > 1){
 				analyzeRecursivePluginDependencies(du, model, depth - 1);
 			}
+		}
+		
+	}
+	
+	public void addEntity(Model model, DeploymentUnit root, DeploymentUnit du) {
+		boolean found = false;
+		
+		for (Entity addedEntity : model.getEntities()) {
+			if (addedEntity.getName().equals(du.getName())) {
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found) {
+			model.addEntity(du);
+		}
+		
+		found = false;
+		for (Relation relation : model.getRelations()) {
+			Entity source = relation.getHeadEntity();
+			Entity dest   = relation.getTailEntity();
 			
+			if (dest.getName().equals(root.getName()) && source.getName().equals(du.getName()) ) {
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found) {
+			model.addRelation(new DeploymentUnitRelation(root, du));
 		}
 	}
 }

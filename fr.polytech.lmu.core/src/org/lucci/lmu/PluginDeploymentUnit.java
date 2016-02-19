@@ -14,7 +14,6 @@ import org.eclipse.osgi.storage.ManifestLocalization;
 
 public class PluginDeploymentUnit extends DeploymentUnit {
 	
-	protected Manifest manifest;
 	
 	public PluginDeploymentUnit(String filePath){
 		super(filePath);

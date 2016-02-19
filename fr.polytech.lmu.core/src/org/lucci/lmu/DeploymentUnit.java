@@ -1,8 +1,11 @@
 package org.lucci.lmu;
 
 import java.util.List;
+import java.util.jar.Manifest;
 
 public abstract class DeploymentUnit extends Entity {
+	
+	protected Manifest manifest;
 	
 	protected String filePath;
 	
