@@ -4,13 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-
-import org.eclipse.osgi.storage.ManifestLocalization;
 
 public class PluginDeploymentUnit extends DeploymentUnit {
 	
@@ -34,9 +31,7 @@ public class PluginDeploymentUnit extends DeploymentUnit {
 	
 	@Override
 	protected void retrieveDescriptionFile() {
-		try {
-			System.out.println("lol");
-			
+		try {			
 			if (new File(filePath).isDirectory()) {
 				manifest = new Manifest(new FileInputStream(filePath + "/META-INF/MANIFEST.MF"));
 			}
@@ -56,10 +51,7 @@ public class PluginDeploymentUnit extends DeploymentUnit {
 		
 		Attributes attributes = manifest.getMainAttributes();
 		
-		String bundlesString = attributes.getValue("Bundle-ClassPath");
-		if (bundlesString != null) {
-			dependancies.addAll(Arrays.asList(bundlesString.split(",")));
-		}
+		String bundlesString;
 		
 		bundlesString = attributes.getValue("Require-Bundle");
 		if (bundlesString != null) {
@@ -68,12 +60,9 @@ public class PluginDeploymentUnit extends DeploymentUnit {
 				if (dep.contains(";")) {
 					dep = dep.split(";")[0];
 				}
-				
-				System.out.println("add : " + dep);
-				
+								
 				dependancies.add(dep);
 			}
-			
 		}
 
 		return dependancies;
