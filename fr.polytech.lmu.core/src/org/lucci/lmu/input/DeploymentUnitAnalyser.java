@@ -81,12 +81,7 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 			try {
 				DeploymentUnit du = new JarDeploymentUnit(location);
 					
-				Entity entity = new Entity();
-				entity.setName(du.getName());
-					
-				model.addEntity(entity);
-				
-				
+				model.addEntity(du);
 				
 				if(depth > 1){
 					analyseRecursiveJarDependencies(du, model, du.retrieveDependencies() , depth - 1);
@@ -113,22 +108,23 @@ public class DeploymentUnitAnalyser implements ModelAnalyser {
 			
 			DeploymentUnit du = new PluginDeploymentUnit(dependencyModel.getModel().getInstallLocation());
 
-				
-			model.addEntity(du);
-			
-			
-			System.out.println("adding maybe");
-			System.out.println(du.getName());
-			System.out.println(root.getName());
-			
 			boolean found = false;
+			
+			for (Entity addedEntity : model.getEntities()) {
+				if (addedEntity.getName().equals(du.getName())) {
+					found = true;
+					break;
+				}
+			}
+			
+			if (!found) {
+				model.addEntity(du);
+			}
+			
+			found = false;
 			for (Relation relation : model.getRelations()) {
 				Entity source = relation.getHeadEntity();
 				Entity dest   = relation.getTailEntity();
-				
-				System.out.println("trying");
-				System.out.println(source.getName());
-				System.out.println(dest.getName());
 				
 				if (dest.getName().equals(root.getName()) && source.getName().equals(du.getName()) ) {
 					found = true;
